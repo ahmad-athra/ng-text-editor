@@ -11,7 +11,8 @@
   <quill-editor
   style="display: block; width: 100%"
   [modules]="quillConfig"
-  formControlName="textEditor">
+  formControlName="textEditor"
+  (onEditorCreated)="onEditorCreated($event)">
   </quill-editor>
 </form>
 

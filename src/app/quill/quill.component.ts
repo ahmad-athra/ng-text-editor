@@ -1,15 +1,10 @@
 import { JsonPipe } from '@angular/common';
-import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CustomModule, QuillModule, QuillModules } from 'ngx-quill'
+import { QuillModule, QuillModules } from 'ngx-quill';
 import Quill from 'quill';
-import { defer } from 'rxjs';
 
-
-
-// // Register modules
-// Quill.register('modules/imageResize', ImageResize);
-// Quill.register('modules/magicUrl', MagicUrl);
+import './quill.config'; // Import the Quill configuration
 
 @Component({
   selector: 'app-quill',
@@ -18,37 +13,13 @@ import { defer } from 'rxjs';
   templateUrl: './quill.component.html',
   styleUrl: './quill.component.scss'
 })
-export class QuillComponent implements OnInit {
+export class QuillComponent  {
   private readonly fb = inject(FormBuilder)
   someForm = this.fb.group({
     default: this.fb.control(''),
     textEditor: this.fb.control('')
   })
 
-  // example default values
-   modules = {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-      ['blockquote', 'code-block'],
-
-      [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-      [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-      [{ 'direction': 'rtl' }],                         // text direction
-
-      [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-      [{ 'font': [] }],
-      [{ 'align': [] }],
-
-      ['clean'],                                         // remove formatting button
-
-      ['link', 'image', 'video']                         // link and image, video
-    ]
-  };
   // font size
 private font_sizes = [
 	false,
@@ -76,6 +47,9 @@ private font_sizes = [
 ];
 
   quillConfig:QuillModules = {
+    imageResize: {},
+    magicUrl: true,
+    table: true,
     toolbar: {
       container: [
         [{ 'header': [1, 2, 3, false] }],
@@ -88,33 +62,81 @@ private font_sizes = [
         [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
         [{ align: [] }],
         [{ indent: "-1" }, { indent: "+1" }],
-        			[
-				{
-					table: [
-						"insert-table",
-						"insert-row-above",
-						"insert-row-below",
-						"insert-column-right",
-						"insert-column-left",
-						"delete-row",
-						"delete-column",
-						"delete-table",
-					],
-				},
-			],
-      ]
+        [
+          {
+            table: [
+              "insert-table",
+              "insert-row-above",
+              "insert-row-below",
+              "insert-column-right",
+              "insert-column-left",
+              "delete-row",
+              "delete-column",
+              "delete-table",
+            ],
+          },
+        ],
+      ],
     }
   }
 
+  quill!: Quill; // Quill instance
+    // Get the Quill instance
+    onEditorCreated(quill: Quill) {
 
+      this.quill = quill;
+      this.setupTableCommands();
+    }
+    setupTableCommands() {
+      const toolbar = this.quill.getModule('toolbar') as any;
 
+      const tableModule = this.quill.getModule('table') as any;
 
+      // Find the table picker in the toolbar
+      const tablePicker = toolbar.container.querySelector('.ql-table');
 
+      if (tablePicker) {
+        // Add click event listener to the table picker items
+        tablePicker.addEventListener('click', (e: Event) => {
 
-  // ----------------------
-  ngOnInit(): void {
-    const Size = Quill.import("attributors/style/size") as any;
-    Size.whitelist = this.font_sizes;
-    Quill.register(Size, true);
-  }
+          const target = e.target as HTMLElement;
+          if (target.classList.contains('ql-picker-item')) {
+            const action = target.getAttribute('data-value');
+
+            e.preventDefault();
+
+            switch (action) {
+              case 'insert-table':
+                tableModule.insertTable(2, 2);
+                break;
+              case 'insert-row-above':
+                tableModule.insertRowAbove();
+                break;
+              case 'insert-row-below':
+                tableModule.insertRowBelow();
+                break;
+              case 'insert-column-left':
+                tableModule.insertColumnLeft();
+                break;
+              case 'insert-column-right':
+                tableModule.insertColumnRight();
+                break;
+              case 'delete-row':
+                tableModule.deleteRow();
+                break;
+              case 'delete-column':
+                tableModule.deleteColumn();
+                break;
+              case 'delete-table':
+                tableModule.deleteTable();
+                break;
+            }
+
+            if (action !== 'delete-row') {
+              tableModule.balanceTables();
+            }
+          }
+        });
+      }
+    }
 }

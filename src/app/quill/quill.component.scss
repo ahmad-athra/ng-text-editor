@@ -24,44 +24,60 @@
 
 
 
+// table
 
-// // Define the list of font sizes
-// $font-sizes: (
-//   "8px",
-//   "9px",
-//   "10px",
-//   "11px",
-//   "12px",
-//   "13px",
-//   "14px",
-//   "15px",
-//   "16px",
-//   "18px",
-//   "20px",
-//   "22px",
-//   "24px",
-//   "32px",
-//   "36px",
-//   "40px",
-//   "48px",
-//   "54px",
-//   "64px",
-//   "96px",
-//   "128px"
-// );
+.ql-table {
+	width: 66px;
 
-// // Loop through the font sizes and generate CSS rules
-// .ql-snow .ql-picker.ql-size .ql-picker-item::before {
-//   content: '---';
-//   font-size: inherit !important; // Use the default font size
-// }
-// @each $size in $font-sizes {
-//     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="#{$size}"]::before {
-//       content: '#{$size}';
-//       font-size: #{$size} !important;
-//     }
+	.ql-picker-label::before {
+		content: "Table";
+	}
 
-//     .ql-size-#{$size} {
-//       font-size: #{$size} !important;
-//     }
-// }
+	.ql-picker-options {
+		[data-value="insert-table"]::before {
+			content: "Insert Table";
+		}
+		[data-value="insert-row-above"]::before {
+			content: "Insert Row Above";
+		}
+		[data-value="insert-row-below"]::before {
+			content: "Insert Row Below";
+		}
+		[data-value="insert-column-right"]::before {
+			content: "Insert Column Right";
+		}
+		[data-value="insert-column-left"]::before {
+			content: "Insert Column Left";
+		}
+		[data-value="delete-row"]::before {
+			content: "Delete Row";
+		}
+		[data-value="delete-column"]::before {
+			content: "Delete Column";
+		}
+		[data-value="delete-table"]::before {
+			content: "Delete Table";
+		}
+	}
+}
+
+.ql-editor td {
+	border: 1px solid var(--dark-border-color);
+}
+
+
+.table-bordered {
+  border: 1px solid #d1d8dd;
+}
+.table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > th,
+.table-bordered > tfoot > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > tbody > tr > td,
+.table-bordered > tfoot > tr > td {
+  border: 1px solid #d1d8dd;
+}
+.table-bordered > thead > tr > th,
+.table-bordered > thead > tr > td {
+  border-bottom-width: 2px;
+}
